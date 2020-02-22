@@ -42,14 +42,14 @@ async function loadCompaniesList() {
       const nameNodes = $('._name', node);
       const name = nameNodes.text() || null;
 
-      const partialLink = node.attribs['data-partial'];
-      const partialHtml = await sequoiacapRequest(partialLink);
+      let url = null;
+      try {
+        const partialLink = node.attribs['data-partial'];
+        url = (await loadUrlFromPartialPage(partialLink)) || null;
+      } catch (e) {
+        warn(`cannot load link for company ${i}`, e);
+      }
 
-      const partial$ = cheerio.load(partialHtml);
-      const linkNodes = partial$('.company-holder a.social-link:first-child');
-      const url = linkNodes.attr('href') || null;
-
-      info('load company', i, name);
       return {
         company: name,
         url,

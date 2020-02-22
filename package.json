@@ -4,6 +4,7 @@
   "description": "upwork job: 23755199",
   "main": "index.js",
   "scripts": {
+    "example": "node index.js",
     "test": "jest"
   },
   "author": "Alexander Zinin",

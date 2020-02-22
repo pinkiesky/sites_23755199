@@ -7,7 +7,6 @@ const requestQueue = new Queue(10, Infinity);
 const COMPANY_NAME = 'greylock.com';
 
 const warn = (...args) => console.warn(COMPANY_NAME, ':', ...args);
-const info = (...args) => console.info(COMPANY_NAME, ':', ...args);
 
 async function greylockRequest(url, opts, extraHeaders) {
   return requestQueue.add(() =>
@@ -58,7 +57,6 @@ async function loadCompaniesList() {
         warn(`cannot load link for company ${i}`, e);
       }
 
-      info('load company', i, name);
       return {
         company: name,
         url,

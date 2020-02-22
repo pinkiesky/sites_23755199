@@ -6,7 +6,6 @@ describe('greylock', () => {
   test('loadCompaniesList', async () => {
     const objsArray = await greylock_com.loadCompaniesList();
 
-    console.log(JSON.stringify(objsArray));
     expect(objsArray).toHaveLength(86);
     expect(objsArray[0]).toEqual({
       company: 'Abnormal Security',

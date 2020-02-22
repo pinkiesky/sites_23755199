@@ -7,7 +7,6 @@ const requestQueue = new Queue(35, Infinity);
 const COMPANY_NAME = 'sequoiacap.com';
 
 const warn = (...args) => console.warn(COMPANY_NAME, ':', ...args);
-const info = (...args) => console.info(COMPANY_NAME, ':', ...args);
 
 async function sequoiacapRequest(url, opts) {
   return requestQueue.add(() =>

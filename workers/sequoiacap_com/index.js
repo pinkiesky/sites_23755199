@@ -1,5 +1,8 @@
 const request = require('request-promise-native');
 const cheerio = require('cheerio');
+const Queue = require('promise-queue');
+
+const requestQueue = new Queue(35, Infinity);
 
 const COMPANY_NAME = 'sequoiacap.com';
 
@@ -7,18 +10,20 @@ const warn = (...args) => console.warn(COMPANY_NAME, ':', ...args);
 const info = (...args) => console.info(COMPANY_NAME, ':', ...args);
 
 async function sequoiacapRequest(url, opts) {
-  return request(url, {
-    baseUrl: 'https://www.sequoiacap.com/',
-    headers: {
-      'User-Agent':
-        'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:73.0) Gecko/20100101 Firefox/73.0',
-      Accept:
-        'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-      'Accept-Language': 'en-US,en;q=0.5',
-    },
-    method: 'GET',
-    ...opts,
-  });
+  return requestQueue.add(() =>
+    request(url, {
+      baseUrl: 'https://www.sequoiacap.com/',
+      headers: {
+        'User-Agent':
+          'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:73.0) Gecko/20100101 Firefox/73.0',
+        Accept:
+          'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+        'Accept-Language': 'en-US,en;q=0.5',
+      },
+      method: 'GET',
+      ...opts,
+    }),
+  );
 }
 
 async function loadCompaniesList() {
@@ -56,7 +61,7 @@ async function loadCompaniesList() {
   });
 
   const resolved = await Promise.all(Array.from(companiesPromises));
-  return resolved.filter(c => !!c);
+  return resolved.filter((c) => !!c);
 }
 
 async function loadUrlFromPartialPage(partialLink) {

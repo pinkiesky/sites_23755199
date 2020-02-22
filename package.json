@@ -1,0 +1,19 @@
+{
+  "name": "sites_23755199",
+  "version": "1.0.0",
+  "description": "upwork job: 23755199",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "author": "Alexander Zinin",
+  "license": "ISC",
+  "dependencies": {
+    "cheerio": "1.0.0-rc.3",
+    "request": "2.88.2",
+    "request-promise-native": "1.0.8"
+  },
+  "devDependencies": {
+    "jest": "25.1.0"
+  }
+}

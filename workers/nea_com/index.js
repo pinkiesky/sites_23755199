@@ -4,9 +4,10 @@ const Queue = require('promise-queue');
 
 const requestQueue = new Queue(35, Infinity);
 
-const COMPANY_NAME = 'nea.com';
+const WORKER_NAME = 'nea.com';
 
-const warn = (...args) => console.warn(COMPANY_NAME, ':', ...args);
+const warn = (...args) => console.warn(WORKER_NAME, ':', ...args);
+const info = (...args) => console.info(WORKER_NAME, ':', ...args);
 
 async function neaRequest(url, opts, extraHeaders) {
   /**
@@ -44,11 +45,15 @@ async function neaRequest(url, opts, extraHeaders) {
 }
 
 async function loadCompaniesList() {
+  info('started');
+
   const html = await neaRequest(
     '/portfolio?keywords=&event=Portfolio+Bottom+Search&dataType=html',
   );
 
   const $ = cheerio.load(html);
+  
+  info('page is loaded');
 
   const companyNodes = $('.company a');
   if (!companyNodes || !companyNodes.length) {
@@ -65,7 +70,7 @@ async function loadCompaniesList() {
 
       return {
         ...(await loadCompanyFromUrl(href.replace('https://www.nea.com', ''))),
-        source: COMPANY_NAME,
+        source: WORKER_NAME,
       };
     } catch (e) {
       warn(`cannot load company with index ${i}`, e);
@@ -73,6 +78,8 @@ async function loadCompaniesList() {
   });
 
   const resolved = await Promise.all(Array.from(companiesPromises));
+
+  info('ended');
   return resolved.filter((c) => !!c);
 }
 
@@ -87,6 +94,8 @@ async function loadCompanyFromUrl(pageUrl) {
       .children('a')
       .attr('href') || null;
 
+  info('loaded', pageUrl);
+
   return {
     company: name,
     url,
@@ -96,4 +105,5 @@ async function loadCompanyFromUrl(pageUrl) {
 module.exports = {
   loadCompanyFromUrl,
   loadCompaniesList,
+  name: WORKER_NAME,
 };

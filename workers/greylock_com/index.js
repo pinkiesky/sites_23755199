@@ -4,9 +4,10 @@ const Queue = require('promise-queue');
 
 const requestQueue = new Queue(10, Infinity);
 
-const COMPANY_NAME = 'greylock.com';
+const WORKER_NAME = 'greylock.com';
 
-const warn = (...args) => console.warn(COMPANY_NAME, ':', ...args);
+const warn = (...args) => console.warn(WORKER_NAME, ':', ...args);
+const info = (...args) => console.info(WORKER_NAME, ':', ...args);
 
 async function greylockRequest(url, opts, extraHeaders) {
   return requestQueue.add(() =>
@@ -28,6 +29,8 @@ async function greylockRequest(url, opts, extraHeaders) {
 }
 
 async function loadCompaniesList() {
+  info('started');
+
   const html = await greylockRequest('greylock-companies/');
 
   const $ = cheerio.load(html);
@@ -60,7 +63,7 @@ async function loadCompaniesList() {
       return {
         company: name,
         url,
-        source: COMPANY_NAME,
+        source: WORKER_NAME,
       };
     } catch (e) {
       warn(`cannot load company with index ${i}`, e);
@@ -68,6 +71,7 @@ async function loadCompaniesList() {
   });
 
   const resolved = await Promise.all(Array.from(companiesPromises));
+  info('ended');
   return resolved.filter((c) => !!c);
 }
 
@@ -85,6 +89,7 @@ async function loadUrlFromRef(ref) {
   );
 
   const partial$ = cheerio.load(partialHtml);
+  info('load partial page', ref);
   const linkNodes = partial$('a.right.link:first-child');
   return linkNodes.attr('href') || null;
 }
@@ -92,4 +97,5 @@ async function loadUrlFromRef(ref) {
 module.exports = {
   loadUrlFromRef,
   loadCompaniesList,
+  name: WORKER_NAME,
 };

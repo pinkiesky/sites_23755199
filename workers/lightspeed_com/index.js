@@ -5,9 +5,10 @@ const Queue = require('promise-queue');
 // !! Increasing the concurrency may cause downloading errors!
 const requestQueue = new Queue(15, Infinity);
 
-const COMPANY_NAME = 'lsvp.com';
+const WORKER_NAME = 'lsvp.com';
 
-const warn = (...args) => console.warn(COMPANY_NAME, ':', ...args);
+const warn = (...args) => console.warn(WORKER_NAME, ':', ...args);
+const info = (...args) => console.info(WORKER_NAME, ':', ...args);
 
 async function lsvpRequest(url, opts, extraHeaders) {
   return requestQueue.add(() =>
@@ -28,9 +29,12 @@ async function lsvpRequest(url, opts, extraHeaders) {
 }
 
 async function loadCompaniesList() {
+  info('started');
+
   const html = await lsvpRequest('/portfolio/');
 
   const $ = cheerio.load(html);
+  info('page is loaded');
 
   const companyNodes = $('.portfolio-list li a');
   if (!companyNodes || !companyNodes.length) {
@@ -47,7 +51,7 @@ async function loadCompaniesList() {
 
       return {
         ...(await loadCompanyFromUrl(href.replace('https://lsvp.com', ''))),
-        source: COMPANY_NAME,
+        source: WORKER_NAME,
       };
     } catch (e) {
       warn(`cannot load company with index ${i}`, e);
@@ -55,6 +59,8 @@ async function loadCompaniesList() {
   });
 
   const resolved = await Promise.all(Array.from(companiesPromises));
+
+  info('ended');
   return resolved.filter((c) => !!c);
 }
 
@@ -65,6 +71,7 @@ async function loadCompanyFromUrl(pageUrl) {
   const name = $('.portfolio-content h2').text() || null;
   const url = $('.portfolio-content a.cta').attr('href') || null;
 
+  info('loaded', pageUrl);
   return {
     company: name,
     url,
@@ -74,4 +81,5 @@ async function loadCompanyFromUrl(pageUrl) {
 module.exports = {
   loadCompanyFromUrl,
   loadCompaniesList,
+  name: WORKER_NAME,
 };

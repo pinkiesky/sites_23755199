@@ -4,9 +4,10 @@ const Queue = require('promise-queue');
 
 const requestQueue = new Queue(35, Infinity);
 
-const COMPANY_NAME = 'sequoiacap.com';
+const WORKER_NAME = 'sequoiacap.com';
 
-const warn = (...args) => console.warn(COMPANY_NAME, ':', ...args);
+const warn = (...args) => console.warn(WORKER_NAME, ':', ...args);
+const info = (...args) => console.info(WORKER_NAME, ':', ...args);
 
 async function sequoiacapRequest(url, opts) {
   return requestQueue.add(() =>
@@ -26,9 +27,13 @@ async function sequoiacapRequest(url, opts) {
 }
 
 async function loadCompaniesList() {
+  info('started');
+
   const html = await sequoiacapRequest('companies');
 
   const $ = cheerio.load(html);
+
+  info('page is loaded');
 
   const companyNodes = $('.js-company-li ._company');
   if (!companyNodes || !companyNodes.length) {
@@ -52,7 +57,7 @@ async function loadCompaniesList() {
       return {
         company: name,
         url,
-        source: COMPANY_NAME,
+        source: WORKER_NAME,
       };
     } catch (e) {
       warn(`cannot load company with index ${i}`, e);
@@ -60,6 +65,7 @@ async function loadCompaniesList() {
   });
 
   const resolved = await Promise.all(Array.from(companiesPromises));
+  info('ended');
   return resolved.filter((c) => !!c);
 }
 
@@ -68,10 +74,13 @@ async function loadUrlFromPartialPage(partialLink) {
 
   const partial$ = cheerio.load(partialHtml);
   const linkNodes = partial$('.company-holder a.social-link:first-child');
+
+  info('partial page is loaded', partialLink);
   return linkNodes.attr('href') || null;
 }
 
 module.exports = {
   loadUrlFromPartialPage,
   loadCompaniesList,
+  name: WORKER_NAME,
 };

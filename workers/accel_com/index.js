@@ -1,9 +1,10 @@
 const request = require('request-promise-native');
 const cheerio = require('cheerio');
 
-const COMPANY_NAME = 'accel.com';
+const WORKER_NAME = 'accel.com';
 
-const warn = (...args) => console.warn(COMPANY_NAME, ':', ...args);
+const warn = (...args) => console.warn(WORKER_NAME, ':', ...args);
+const info = (...args) => console.info(WORKER_NAME, ':', ...args);
 
 async function accelRequest(url, opts) {
   return request(url, {
@@ -21,9 +22,13 @@ async function accelRequest(url, opts) {
 }
 
 async function loadCompaniesList() {
+  info('started');
+
   const html = await accelRequest('companies/all');
 
   const $ = cheerio.load(html);
+
+  info('page is loaded');
 
   const companyNodes = $(
     '.company-list .company-item',
@@ -41,7 +46,7 @@ async function loadCompaniesList() {
       return {
         company: name ? name.trim() : name,
         url,
-        source: COMPANY_NAME,
+        source: WORKER_NAME,
       };
     } catch (e) {
       warn(`cannot load company with index ${i}`, e);
@@ -49,9 +54,11 @@ async function loadCompaniesList() {
   });
 
   const resolved = Array.from(companies);
+  info('ended');
   return resolved.filter((c) => !!c);
 }
 
 module.exports = {
   loadCompaniesList,
+  name: WORKER_NAME,
 };

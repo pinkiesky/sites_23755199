@@ -3,7 +3,7 @@ const Queue = require('promise-queue');
 
 const requestQueue = new Queue(7, Infinity);
 
-const COMPANY_NAME = 'indiehackers.com';
+const WORKER_NAME = 'indiehackers.com';
 
 // Limit of non-admin API is 1000 results per category. We may reduce rows count via params (tag Filters)
 // Sounds like a hack, but it's working!
@@ -77,7 +77,8 @@ const AVAILABLE_CATEGORIES = [
 
 const COMPANIES_WITHOUT_ANY_CATEGORY = AVAILABLE_CATEGORIES.map((c) => `-${c}`);
 
-const warn = (...args) => console.warn(COMPANY_NAME, ':', ...args);
+const warn = (...args) => console.warn(WORKER_NAME, ':', ...args);
+const info = (...args) => console.info(WORKER_NAME, ':', ...args);
 
 const client = algoliasearch('N86T1R3OWZ', '5140dac5e87f47346abbda1a34ee70c3');
 const prodIndex = client.initIndex('products');
@@ -95,6 +96,8 @@ async function searchInIndex(category, page, hitsPerPage = 400) {
 }
 
 async function loadCompaniesByCategory(category) {
+  info('loading category', category);
+
   let page = 0;
   const companies = [];
   while (true) {
@@ -109,7 +112,7 @@ async function loadCompaniesByCategory(category) {
       companies.push({
         company: hit.name,
         url: hit.websiteUrl,
-        source: COMPANY_NAME,
+        source: WORKER_NAME,
       });
     });
   }
@@ -118,6 +121,8 @@ async function loadCompaniesByCategory(category) {
 }
 
 async function loadCompaniesList() {
+  info('started');
+
   const companiesByUrl = {};
 
   const loadPromises = [
@@ -132,6 +137,7 @@ async function loadCompaniesList() {
   // loadCompaniesWithoutCategory
   await Promise.all(loadPromises);
 
+  info('ended');
   return Object.values(companiesByUrl).filter((c) => !!c);
 }
 
@@ -141,4 +147,5 @@ module.exports = {
   AVAILABLE_CATEGORIES,
   COMPANIES_WITHOUT_ANY_CATEGORY,
   searchInIndex,
+  name: WORKER_NAME,
 };

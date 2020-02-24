@@ -4,9 +4,10 @@ const Queue = require('promise-queue');
 
 const requestQueue = new Queue(35, Infinity);
 
-const COMPANY_NAME = 'kleinerperkins.com';
+const WORKER_NAME = 'kleinerperkins.com';
 
-const warn = (...args) => console.warn(COMPANY_NAME, ':', ...args);
+const warn = (...args) => console.warn(WORKER_NAME, ':', ...args);
+const info = (...args) => console.info(WORKER_NAME, ':', ...args);
 
 async function kleinerperkinsRequest(url, opts) {
   return requestQueue.add(() =>
@@ -30,6 +31,8 @@ async function loadCompaniesListByName(name) {
 
   const $ = cheerio.load(html);
 
+  info('loaded page', name);
+
   const companyNodes = $('a.tile--company:not(.open-case-study)');
   const companies = companyNodes.map((i, node) => {
     try {
@@ -46,7 +49,7 @@ async function loadCompaniesListByName(name) {
       return {
         company: name,
         url,
-        source: COMPANY_NAME,
+        source: WORKER_NAME,
       };
     } catch (e) {
       warn(`cannot load company with index ${i}`, e);
@@ -75,7 +78,7 @@ async function loadCompaniesListByName(name) {
       return {
         company: name,
         url,
-        source: COMPANY_NAME,
+        source: WORKER_NAME,
       };
     } catch (e) {
       warn(`cannot load company with index ${i}`, e);
@@ -84,6 +87,8 @@ async function loadCompaniesListByName(name) {
 
   const resolved = Array.from(companies);
   const resolvedCase = await Promise.all(Array.from(companiesCase));
+
+  info('ended page', name);
   return [...resolved, ...resolvedCase];
 }
 
@@ -96,6 +101,8 @@ async function loadUrlFromPartialPage(partialLink) {
 }
 
 async function loadCompaniesList() {
+  info('started');
+
   const lists = await Promise.all([
     loadCompaniesListByName(''), // alumni
     loadCompaniesListByName('consumer/'),
@@ -104,10 +111,12 @@ async function loadCompaniesList() {
     loadCompaniesListByName('health-care/'),
   ]);
 
+  info('ended');
   return lists.reduce((arr, companies) => [...arr, ...companies], []);
 }
 
 module.exports = {
   loadUrlFromPartialPage,
   loadCompaniesList,
+  name: WORKER_NAME,
 };

@@ -1,9 +1,10 @@
 const request = require('request-promise-native');
 const safeEval = require('safe-eval');
 
-const COMPANY_NAME = 'ycombinator.com';
+const WORKER_NAME = 'ycombinator.com';
 
-const warn = (...args) => console.warn(COMPANY_NAME, ':', ...args);
+const warn = (...args) => console.warn(WORKER_NAME, ':', ...args);
+const info = (...args) => console.info(WORKER_NAME, ':', ...args);
 
 async function ycRequest(url, opts) {
   /**
@@ -45,20 +46,25 @@ function setupCompanies(rawCompaniesArray) {
       return {
         company: cmp.name || null,
         url: cmp.url || null,
-        source: COMPANY_NAME,
+        source: WORKER_NAME,
       };
     })
     .filter((c) => !!c);
 }
 
 async function loadCompaniesList() {
+  info('started');
+
   const js = await ycRequest(
     `companies/export.json?callback=true&_=${Date.now()}`,
   );
+
+  info('call performed');
 
   return safeEval(js, { setupCompanies });
 }
 
 module.exports = {
   loadCompaniesList,
+  name: WORKER_NAME,
 };

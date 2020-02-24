@@ -1,9 +1,10 @@
 const request = require('request-promise-native');
 const cheerio = require('cheerio');
 
-const COMPANY_NAME = 'foundersfund.com';
+const WORKER_NAME = 'foundersfund.com';
 
-const warn = (...args) => console.warn(COMPANY_NAME, ':', ...args);
+const warn = (...args) => console.warn(WORKER_NAME, ':', ...args);
+const info = (...args) => console.info(WORKER_NAME, ':', ...args);
 
 async function ffRequest(url, opts) {
   return request(url, {
@@ -21,6 +22,8 @@ async function ffRequest(url, opts) {
 }
 
 async function loadCompaniesList() {
+  info('started');
+
   const json = await ffRequest('wp-json/wp/v2/company?per_page=100');
   const rawCompanies = JSON.parse(json);
   if (!rawCompanies || !rawCompanies.length) {
@@ -46,16 +49,18 @@ async function loadCompaniesList() {
       return {
         company: (rawCompany.title && rawCompany.title.rendered) || null,
         url,
-        source: COMPANY_NAME,
+        source: WORKER_NAME,
       };
     } catch (e) {
       warn(`cannot load company with index ${i}`, e);
     }
   });
 
+  info('ended');
   return companies.filter((c) => !!c);
 }
 
 module.exports = {
   loadCompaniesList,
+  name: WORKER_NAME,
 };

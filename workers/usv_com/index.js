@@ -1,9 +1,10 @@
 const request = require('request-promise-native');
 const cheerio = require('cheerio');
 
-const COMPANY_NAME = 'usv.com';
+const WORKER_NAME = 'usv.com';
 
-const warn = (...args) => console.warn(COMPANY_NAME, ':', ...args);
+const warn = (...args) => console.warn(WORKER_NAME, ':', ...args);
+const info = (...args) => console.info(WORKER_NAME, ':', ...args);
 
 async function usvRequest(url, opts) {
   /**
@@ -35,9 +36,13 @@ async function usvRequest(url, opts) {
 }
 
 async function loadCompaniesList() {
+  info('started');
+
   const html = await usvRequest('companies/');
 
   const $ = cheerio.load(html);
+
+  info('page is loaded');
 
   const companyNodes = $(
     '.companies-list .m__list-row:not(.m__list-row--mobile) .m__list-row__col:nth-child(2)',
@@ -63,7 +68,7 @@ async function loadCompaniesList() {
       return {
         company: name ? name.trim() : name,
         url,
-        source: COMPANY_NAME,
+        source: WORKER_NAME,
       };
     } catch (e) {
       warn(`cannot load company with index ${i}`, e);
@@ -71,9 +76,11 @@ async function loadCompaniesList() {
   });
 
   const resolved = Array.from(companies);
+  info('ended');
   return resolved.filter((c) => !!c);
 }
 
 module.exports = {
   loadCompaniesList,
+  name: WORKER_NAME,
 };

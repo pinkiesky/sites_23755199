@@ -1,9 +1,10 @@
 const request = require('request-promise-native');
 const cheerio = require('cheerio');
 
-const COMPANY_NAME = 'a16z.com';
+const WORKER_NAME = 'a16z.com';
 
-const warn = (...args) => console.warn(COMPANY_NAME, ':', ...args);
+const warn = (...args) => console.warn(WORKER_NAME, ':', ...args);
+const info = (...args) => console.info(WORKER_NAME, ':', ...args);
 
 async function a16zRequest(url, opts) {
   return request(url, {
@@ -21,13 +22,15 @@ async function a16zRequest(url, opts) {
 }
 
 async function loadCompaniesList() {
+  info('started');
+
   const html = await a16zRequest('portfolio/');
 
   const $ = cheerio.load(html);
 
-  const companyNodes = $(
-    '.company a',
-  );
+  info('page is loaded');
+
+  const companyNodes = $('.company a');
   if (!companyNodes || !companyNodes.length) {
     warn('company nodes is null');
     return [];
@@ -40,7 +43,7 @@ async function loadCompaniesList() {
       return {
         company: url,
         url,
-        source: COMPANY_NAME,
+        source: WORKER_NAME,
       };
     } catch (e) {
       warn(`cannot load company with index ${i}`, e);
@@ -48,9 +51,11 @@ async function loadCompaniesList() {
   });
 
   const resolved = Array.from(companies);
+  info('ended');
   return resolved.filter((c) => !!c);
 }
 
 module.exports = {
   loadCompaniesList,
+  name: WORKER_NAME,
 };

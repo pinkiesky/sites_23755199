@@ -38,7 +38,7 @@ async function loadCompaniesList() {
       const url = node.attribs.href;
 
       return {
-        company: null,
+        company: url,
         url,
         source: COMPANY_NAME,
       };

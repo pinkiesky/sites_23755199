@@ -9,19 +9,19 @@ describe('a16z', () => {
     expect(objsArray).toHaveLength(253);
 
     expect(objsArray[0]).toEqual({
-      company: null,
+      company: 'http://www.apptio.com',
       url: 'http://www.apptio.com',
       source: 'a16z.com',
     });
 
     expect(objsArray).toContainEqual({
-      company: null,
+      company: 'https://www.koboldmetals.com',
       url: 'https://www.koboldmetals.com',
       source: 'a16z.com',
     });
 
     expect(objsArray[objsArray.length - 1]).toEqual({
-      company: null,
+      company: 'http://www.flyzipline.com',
       url: 'http://www.flyzipline.com',
       source: 'a16z.com',
     });

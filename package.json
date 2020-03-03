@@ -12,10 +12,12 @@
   "dependencies": {
     "algoliasearch": "3.35.1",
     "cheerio": "1.0.0-rc.3",
+    "csv-parse": "4.8.6",
     "promise-queue": "2.2.5",
     "request": "2.88.2",
     "request-promise-native": "1.0.8",
-    "safe-eval": "0.4.1"
+    "safe-eval": "0.4.1",
+    "unzipper": "0.10.9"
   },
   "devDependencies": {
     "jest": "25.1.0"

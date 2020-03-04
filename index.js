@@ -12,6 +12,7 @@ const nea = require('./workers/nea_com');
 const sequoiacap = require('./workers/sequoiacap_com');
 const usv = require('./workers/usv_com');
 const ycombinator = require('./workers/ycombinator_com');
+const cssdesignawargs = require('./workers/cssdesignawargs_com');
 
 async function executeLoader(loader, filename) {
   const data = await loader.loadCompaniesList();
@@ -34,6 +35,7 @@ async function example() {
     executeLoader(sequoiacap, 'sequoiacap'),
     executeLoader(usv, 'usv'),
     executeLoader(ycombinator, 'ycombinator'),
+    executeLoader(cssdesignawargs, 'cssdesignawargs'),
   ];
 
   loaders = loaders.map((promise) => promise.catch(console.error));

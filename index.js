@@ -3,6 +3,8 @@ const { join } = require('path');
 
 const a16z = require('./workers/a16z_com');
 const accel = require('./workers/accel_com');
+const awwards = require('./workers/awwwards_com');
+const cssdesignawargs = require('./workers/cssdesignawargs_com');
 const foundersfund = require('./workers/foundersfund_com');
 const greylock = require('./workers/greylock_com');
 const indiehackers = require('./workers/indiehackers_com');
@@ -12,7 +14,6 @@ const nea = require('./workers/nea_com');
 const sequoiacap = require('./workers/sequoiacap_com');
 const usv = require('./workers/usv_com');
 const ycombinator = require('./workers/ycombinator_com');
-const cssdesignawargs = require('./workers/cssdesignawargs_com');
 
 async function executeLoader(loader, filename) {
   const data = await loader.loadCompaniesList();
@@ -26,6 +27,8 @@ async function example() {
   let loaders = [
     executeLoader(a16z, 'a16z'),
     executeLoader(accel, 'accel'),
+    executeLoader(awwards, 'awwards'),
+    executeLoader(cssdesignawargs, 'cssdesignawargs'),
     executeLoader(foundersfund, 'foundersfund'),
     executeLoader(greylock, 'greylock'),
     executeLoader(indiehackers, 'indiehackers'),
@@ -35,7 +38,6 @@ async function example() {
     executeLoader(sequoiacap, 'sequoiacap'),
     executeLoader(usv, 'usv'),
     executeLoader(ycombinator, 'ycombinator'),
-    executeLoader(cssdesignawargs, 'cssdesignawargs'),
   ];
 
   loaders = loaders.map((promise) => promise.catch(console.error));

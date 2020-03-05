@@ -3,6 +3,7 @@ const { join } = require('path');
 
 const a16z = require('./workers/a16z_com');
 const accel = require('./workers/accel_com');
+const alexa = require('./workers/alexa_1m');
 const awwards = require('./workers/awwwards_com');
 const cssdesignawargs = require('./workers/cssdesignawargs_com');
 const foundersfund = require('./workers/foundersfund_com');
@@ -27,6 +28,7 @@ async function example() {
   let loaders = [
     executeLoader(a16z, 'a16z'),
     executeLoader(accel, 'accel'),
+    executeLoader(alexa, 'alexa'),
     executeLoader(awwards, 'awwards'),
     executeLoader(cssdesignawargs, 'cssdesignawargs'),
     executeLoader(foundersfund, 'foundersfund'),

@@ -6,6 +6,7 @@ const accel = require('./workers/accel_com');
 const alexa = require('./workers/alexa_1m');
 const awwards = require('./workers/awwwards_com');
 const cssdesignawargs = require('./workers/cssdesignawargs_com');
+const cssmania = require('./workers/cssmania_com');
 const foundersfund = require('./workers/foundersfund_com');
 const greylock = require('./workers/greylock_com');
 const indiehackers = require('./workers/indiehackers_com');
@@ -31,6 +32,7 @@ async function example() {
     executeLoader(alexa, 'alexa'),
     executeLoader(awwards, 'awwards'),
     executeLoader(cssdesignawargs, 'cssdesignawargs'),
+    executeLoader(cssmania, 'cssmania'),
     executeLoader(foundersfund, 'foundersfund'),
     executeLoader(greylock, 'greylock'),
     executeLoader(indiehackers, 'indiehackers'),
